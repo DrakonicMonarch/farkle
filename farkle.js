@@ -41,6 +41,9 @@ function rollDice() {
                 score = 0;
                 document.getElementById('score').innerHTML = 'Farkle!';
                 sendToast(farkleStatus);
+                resetClicked(true);
+                initializeDice();
+                updateDiceImg();
             }
         } else {
             resetClicked();
@@ -52,9 +55,11 @@ function rollDice() {
 }
 
 /*Resets any clicked buttons to unclicked state if not kept*/
-function resetClicked() {
+function resetClicked(hardReset = false) {
+    console.log(`hardReset:${hardReset}`);
     for (i = 0; i < 6; i++) {
-        if (!diceArr[i].set && diceArr.clicked) {
+        console.log(`dice ${i}: set = ${!diceArr[i].set}, clicked = ${diceArr[i].clicked}`);
+        if ((!diceArr[i].set || hardReset) && diceArr[i].clicked) {
             document.getElementById(`die${i + 1}`).classList.toggle('transparent');
             diceArr[i].clicked = false;
         }
@@ -91,17 +96,16 @@ function diceClick(img) {
     }
 }
 
-//TODO: Needs fixing
 /*Checks for a Farkle*/
 function checkForFarkle() {
     var diceNum = [0, 0, 0, 0, 0, 0];
     for (i = 0; i < 6; i++) {
-        if (diceArr[i].clicked && !diceArr[i].set) {
+        if (!diceArr[i].set) {
             diceNum[diceArr[i].value - 1]++;
         }
     }
     for (i = 0; i < 6; i++) {
-        if (i == 0 || i == 4) {
+        if (i === 0 || i == 4) {
             if (diceNum[i] > 0) {
                 return 'safe';
             }
@@ -139,20 +143,18 @@ function updateScore() {
     }
     for (i = 0; i < 6; i++) {
         if (diceNum[i] > 0) {
-            if (i == 0) {
+            if (i === 0) {
                 if (diceNum[i] == 3) {
                     tempScore += 1000;
                 } else {
                     tempScore += diceNum[i] * 100;
                 }
-                break;
             } else if (i == 4) {
                 if (diceNum[i] == 3) {
                     tempScore += 500;
                 } else {
                     tempScore += diceNum[i] * 50;
                 }
-                break;
             } else {
                 if (diceNum[i] == 3) {
                     tempScore += (i + 1) * 100;
@@ -168,9 +170,21 @@ function updateScore() {
 }
 
 function bankScore() {
-    bankedScore += score;
-    score = 0;
-    document.getElementById('bankedscore').innerHTML = bankedScore;
-    document.getElementById('score').innerHTML = score;
-    initializeDice();
+    var clickedStatus = checkForClicked();
+    if (clickedStatus == 'success') {
+        var scoreStatus = updateScore();
+        if (scoreStatus == 'success') {
+            resetClicked(true);
+            initializeDice();
+            updateDiceImg();
+            bankedScore += score;
+            score = 0;
+            document.getElementById('bankedscore').innerHTML = bankedScore;
+            document.getElementById('score').innerHTML = score;
+        } else {
+            sendToast(scoreStatus);
+        }
+    } else {
+        sendToast(clickedStatus);
+    }
 }

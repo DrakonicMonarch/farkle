@@ -51,12 +51,8 @@ body {
     width: 20%;
     margin-left: 160px;
 }
-.roll {
-}
 .roll:hover {
     background-color: lightgreen;
-}
-.bank {
 }
 .bank:hover {
     background-color: lightgreen;
