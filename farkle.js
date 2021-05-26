@@ -8,7 +8,7 @@ function initializeDice() {
     for (i = 0; i < 6; i++) {
         diceArr[i] = {};
         diceArr[i].id = `die${i + 1}`;
-        diceArr[i].value = i + 1;
+        diceArr[i].value = 0;
         diceArr[i].clicked = false;
         diceArr[i].set = false; //added to record if a dice is kept and therefore can no longer be clicked or changed
     }
@@ -58,7 +58,7 @@ function rollDice() {
 function resetClicked(hardReset = false) {
     for (i = 0; i < 6; i++) {
         if ((!diceArr[i].set || hardReset) && diceArr[i].clicked) {
-            document.getElementById(`die${i + 1}`).classList.toggle('transparent');
+            document.getElementById(`die${i + 1}`).classList.toggle('selected');
             diceArr[i].clicked = false;
         }
     }
@@ -79,7 +79,7 @@ function sendToast(message) {
 function updateDiceImg() {
     var diceImage;
     for (var i = 0; i < 6; i++) {
-        diceImage = 'images/' + diceArr[i].value + '.png';
+        diceImage = diceArr[i].value === 0 ? 'images/question_mark.png' : 'images/' + diceArr[i].value + '.png';
         document.getElementById(diceArr[i].id).setAttribute('src', diceImage);
     }
 }
@@ -89,7 +89,7 @@ function diceClick(img) {
     if (rolled) {
         var i = img.getAttribute('data-number');
         if (!diceArr[i].set) {
-            img.classList.toggle('transparent');
+            img.classList.toggle('selected');
             if (!diceArr[i].clicked) {
                 diceArr[i].clicked = true;
             } else {
