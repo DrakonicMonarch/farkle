@@ -56,9 +56,7 @@ function rollDice() {
 
 /*Resets any clicked buttons to unclicked state if not kept*/
 function resetClicked(hardReset = false) {
-    console.log(`hardReset:${hardReset}`);
     for (i = 0; i < 6; i++) {
-        console.log(`dice ${i}: set = ${!diceArr[i].set}, clicked = ${diceArr[i].clicked}`);
         if ((!diceArr[i].set || hardReset) && diceArr[i].clicked) {
             document.getElementById(`die${i + 1}`).classList.toggle('transparent');
             diceArr[i].clicked = false;
@@ -66,10 +64,15 @@ function resetClicked(hardReset = false) {
     }
 }
 
-//TODO: create toasts instead of logs
 /*handles any toast messages that need to be sent*/
-function sendToast(error) {
-    console.log(error);
+function sendToast(message) {
+    console.log(message);
+    var toast = document.getElementById('toast');
+    toast.innerHTML = message;
+    toast.className = 'show';
+    setTimeout(function () {
+        toast.className = toast.className.replace('show', '');
+    }, 3000);
 }
 
 /*Updating images of dice given values of rollDice*/
